@@ -1,0 +1,1149 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mastering Relative Clauses - Interactive Learning App</title>
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- FontAwesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Google Fonts: Poppins & Fredoka for Pixar-like feel -->
+    <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@400;500;600;700&family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <!-- Tone.js for Sound Effects -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/tone/14.8.49/Tone.js"></script>
+    <!-- Canvas Confetti for Game/Quiz success -->
+    <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
+
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        pixar: {
+                            blue: '#0066FF',
+                            purple: '#7C3AED',
+                            yellow: '#FFB800',
+                            pink: '#FF2E93',
+                            cyan: '#00F0FF',
+                            bg: '#0F172A',
+                            card: '#1E293B'
+                        }
+                    },
+                    fontFamily: {
+                        fredoka: ['Fredoka', 'sans-serif'],
+                        poppins: ['Poppins', 'sans-serif']
+                    }
+                }
+            }
+        }
+    </script>
+
+    <style>
+        body {
+            font-family: 'Poppins', sans-serif;
+            background: linear-gradient(135deg, #0f172a 0%, #1e1b4b 50%, #311042 100%);
+            min-height: 100vh;
+            color: #f8fafc;
+        }
+
+        .heading-font {
+            font-family: 'Fredoka', cursive;
+        }
+
+        /* 3D Pixar Style Cards */
+        .pixar-card {
+            background: rgba(30, 41, 59, 0.75);
+            backdrop-filter: blur(16px);
+            border: 2px solid rgba(255, 255, 255, 0.12);
+            border-radius: 1.5rem;
+            box-shadow: 0 20px 30px -10px rgba(0, 0, 0, 0.5),
+                        inset 0 2px 4px rgba(255, 255, 255, 0.2);
+            transition: all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+        }
+
+        .pixar-card:hover {
+            transform: translateY(-5px) scale(1.01);
+            border-color: rgba(0, 240, 255, 0.4);
+            box-shadow: 0 25px 35px -10px rgba(0, 102, 255, 0.3),
+                        inset 0 2px 6px rgba(255, 255, 255, 0.4);
+        }
+
+        /* 3D Pixar Buttons */
+        .pixar-btn {
+            position: relative;
+            font-family: 'Fredoka', cursive;
+            transition: all 0.15s ease;
+            box-shadow: 0 8px 0 #0044b3, 0 15px 20px rgba(0,0,0,0.3);
+        }
+
+        .pixar-btn:active {
+            transform: translateY(6px);
+            box-shadow: 0 2px 0 #0044b3, 0 5px 10px rgba(0,0,0,0.3);
+        }
+
+        .pixar-btn-yellow {
+            background: linear-gradient(180deg, #FFD027 0%, #FF9900 100%);
+            color: #1e1b4b;
+            box-shadow: 0 6px 0 #b36b00, 0 10px 15px rgba(255, 153, 0, 0.3);
+        }
+
+        .pixar-btn-yellow:active {
+            transform: translateY(4px);
+            box-shadow: 0 2px 0 #b36b00, 0 5px 8px rgba(255, 153, 0, 0.3);
+        }
+
+        .pixar-btn-purple {
+            background: linear-gradient(180deg, #A855F7 0%, #7E22CE 100%);
+            color: #ffffff;
+            box-shadow: 0 6px 0 #581c87, 0 10px 15px rgba(126, 34, 206, 0.3);
+        }
+
+        .pixar-btn-purple:active {
+            transform: translateY(4px);
+            box-shadow: 0 2px 0 #581c87, 0 5px 8px rgba(126, 34, 206, 0.3);
+        }
+
+        .glow-text {
+            text-shadow: 0 0 15px rgba(0, 240, 255, 0.6);
+        }
+
+        /* Custom Scrollbar */
+        ::-webkit-scrollbar {
+            width: 10px;
+        }
+        ::-webkit-scrollbar-track {
+            background: #0f172a;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #334155;
+            border-radius: 5px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: #0066FF;
+        }
+
+        .badge-pulse {
+            animation: pulse 2s infinite;
+        }
+        @keyframes pulse {
+            0%, 100% { opacity: 1; transform: scale(1); }
+            50% { opacity: 0.85; transform: scale(1.05); }
+        }
+    </style>
+</head>
+<body class="flex flex-col min-h-screen justify-between overflow-x-hidden selection:bg-pixar-cyan selection:text-black">
+
+    <!-- NAVIGATION BAR -->
+    <header class="sticky top-0 z-50 px-4 py-3 bg-slate-900/80 backdrop-blur-md border-b border-slate-700/50">
+        <div class="max-w-7xl mx-auto flex flex-wrap items-center justify-between gap-4">
+            
+            <!-- Logo & Title -->
+            <div class="flex items-center space-x-3 cursor-pointer" onclick="switchSection('home')">
+                <div class="w-12 h-12 rounded-2xl bg-gradient-to-tr from-pixar-blue via-pixar-cyan to-pixar-pink p-0.5 shadow-lg flex items-center justify-center">
+                    <div class="w-full h-full bg-slate-900 rounded-[14px] flex items-center justify-center">
+                        <i class="fa-solid fa-wand-magic-sparkles text-2xl text-pixar-cyan"></i>
+                    </div>
+                </div>
+                <div>
+                    <h1 class="heading-font text-xl md:text-2xl font-bold bg-gradient-to-r from-pixar-cyan via-white to-pixar-yellow bg-clip-text text-transparent">
+                        Relative Clause Studio
+                    </h1>
+                    <p class="text-xs text-slate-400 font-medium">Class 12 Senior High School • Phase E/F</p>
+                </div>
+            </div>
+
+            <!-- Nav Links -->
+            <nav class="flex items-center flex-wrap gap-2 text-sm font-semibold">
+                <button onclick="switchSection('guide')" class="nav-btn px-3 py-2 rounded-xl text-slate-300 hover:text-white hover:bg-slate-800 transition flex items-center gap-2">
+                    <i class="fa-solid fa-compass text-pixar-yellow"></i>
+                    <span>Guide</span>
+                </button>
+                <button onclick="switchSection('objectives')" class="nav-btn px-3 py-2 rounded-xl text-slate-300 hover:text-white hover:bg-slate-800 transition flex items-center gap-2">
+                    <i class="fa-solid fa-bullseye text-pixar-pink"></i>
+                    <span>Objectives</span>
+                </button>
+                <button onclick="switchSection('material')" class="nav-btn px-3 py-2 rounded-xl text-slate-300 hover:text-white hover:bg-slate-800 transition flex items-center gap-2">
+                    <i class="fa-solid fa-book-open text-pixar-cyan"></i>
+                    <span>Material</span>
+                </button>
+                <button onclick="switchSection('game')" class="nav-btn px-3 py-2 rounded-xl text-slate-300 hover:text-white hover:bg-slate-800 transition flex items-center gap-2">
+                    <i class="fa-solid fa-gamepad text-green-400"></i>
+                    <span>Game</span>
+                </button>
+                <button onclick="switchSection('quiz')" class="nav-btn px-3 py-2 rounded-xl text-slate-300 hover:text-white hover:bg-slate-800 transition flex items-center gap-2">
+                    <i class="fa-solid fa-pen-to-square text-pixar-purple"></i>
+                    <span>Quiz</span>
+                </button>
+                <button onclick="switchSection('developer')" class="nav-btn px-3 py-2 rounded-xl text-slate-300 hover:text-white hover:bg-slate-800 transition flex items-center gap-2">
+                    <i class="fa-solid fa-user-astronaut text-pixar-blue"></i>
+                    <span>Developer</span>
+                </button>
+            </nav>
+        </div>
+    </header>
+
+    <!-- MAIN CONTENT AREA -->
+    <main class="max-w-7xl mx-auto px-4 py-8 flex-grow w-full">
+
+        <!-- ================= HOME SECTION ================= -->
+        <section id="sec-home" class="space-y-8 animate-fadeIn">
+            <!-- Hero Banner -->
+            <div class="pixar-card p-8 md:p-12 relative overflow-hidden flex flex-col md:flex-row items-center justify-between gap-8">
+                <!-- Background Accent Lights -->
+                <div class="absolute -top-24 -left-24 w-72 h-72 bg-pixar-blue/30 rounded-full blur-3xl"></div>
+                <div class="absolute -bottom-24 -right-24 w-72 h-72 bg-pixar-purple/30 rounded-full blur-3xl"></div>
+
+                <div class="space-y-6 max-w-2xl relative z-10 text-center md:text-left">
+                    <span class="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-pixar-cyan/10 border border-pixar-cyan/30 text-pixar-cyan text-sm font-semibold">
+                        <i class="fa-solid fa-sparkles"></i> Interactive Learning Media
+                    </span>
+                    <h2 class="heading-font text-4xl md:text-6xl font-bold tracking-tight text-white leading-tight">
+                        Unravel the Power of <br>
+                        <span class="bg-gradient-to-r from-pixar-yellow via-pixar-pink to-pixar-cyan bg-clip-text text-transparent glow-text">
+                            Relative Clauses!
+                        </span>
+                    </h2>
+                    <p class="text-slate-300 text-lg leading-relaxed">
+                        Welcome, Grade 12 students! Step into an immersive world to master <strong class="text-pixar-cyan">Defining</strong> and <strong class="text-pixar-yellow">Non-Defining Relative Clauses</strong> through 3D simulations, fun mini-games, and quizzes.
+                    </p>
+                    <div class="flex flex-wrap gap-4 justify-center md:justify-start pt-2">
+                        <button onclick="switchSection('material')" class="pixar-btn pixar-btn-yellow px-8 py-4 rounded-2xl font-bold text-lg flex items-center gap-3">
+                            <i class="fa-solid fa-play"></i> Start Learning
+                        </button>
+                        <button onclick="switchSection('game')" class="pixar-btn pixar-btn-purple px-8 py-4 rounded-2xl font-bold text-lg flex items-center gap-3">
+                            <i class="fa-solid fa-dice text-yellow-300"></i> Play Game
+                        </button>
+                    </div>
+                </div>
+
+                <!-- 3D Illustration Avatar Box -->
+                <div class="relative w-64 h-64 md:w-80 md:h-80 flex-shrink-0 flex items-center justify-center">
+                    <div class="absolute inset-0 bg-gradient-to-tr from-pixar-blue to-pixar-pink rounded-3xl rotate-6 blur-lg opacity-60 animate-pulse"></div>
+                    <div class="relative w-full h-full rounded-3xl border-2 border-white/20 overflow-hidden shadow-2xl bg-slate-900 flex flex-col items-center justify-center p-6 text-center">
+                        <!-- SVG 3D Pixar Style Character Illustration -->
+                        <svg class="w-36 h-36 mb-2 drop-shadow-[0_10px_10px_rgba(0,0,0,0.5)]" viewBox="0 0 200 200" fill="none" xmlns="http://www.w3.org/2000/svg">
+                            <!-- Character Head -->
+                            <circle cx="100" cy="90" r="50" fill="url(#skin-grad)"/>
+                            <!-- Eyes -->
+                            <ellipse cx="82" cy="85" rx="8" ry="12" fill="#1E293B"/>
+                            <ellipse cx="118" cy="85" rx="8" ry="12" fill="#1E293B"/>
+                            <circle cx="84" cy="82" r="3" fill="white"/>
+                            <circle cx="120" cy="82" r="3" fill="white"/>
+                            <!-- Smile -->
+                            <path d="M 82 110 Q 100 125 118 110" stroke="#E11D48" stroke-width="5" stroke-linecap="round" fill="none"/>
+                            <!-- Graduation Cap / Pixar Hair -->
+                            <path d="M 50 60 Q 100 10 150 60 Z" fill="#7C3AED"/>
+                            <path d="M 40 60 L 160 60 L 100 20 Z" fill="#0066FF"/>
+                            <circle cx="100" cy="20" r="8" fill="#FFB800"/>
+                            <!-- Glasses -->
+                            <circle cx="82" cy="85" r="16" stroke="#FFB800" stroke-width="4" fill="none"/>
+                            <circle cx="118" cy="85" r="16" stroke="#FFB800" stroke-width="4" fill="none"/>
+                            <line x1="98" y1="85" x2="102" y2="85" stroke="#FFB800" stroke-width="4"/>
+                            <!-- Gradient Definitions -->
+                            <defs>
+                                <linearGradient id="skin-grad" x1="50" y1="40" x2="150" y2="140" gradientUnits="userSpaceOnUse">
+                                    <stop stop-color="#FFD1B3"/>
+                                    <stop offset="1" stop-color="#F4A261"/>
+                                </linearGradient>
+                            </defs>
+                        </svg>
+                        <p class="heading-font text-pixar-cyan text-lg font-bold">Smart Student</p>
+                        <p class="text-xs text-slate-400">Ready to level up your English Grammar?</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Quick Features Cards -->
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                <div class="pixar-card p-6 flex items-start gap-4 cursor-pointer" onclick="switchSection('material')">
+                    <div class="w-14 h-14 rounded-2xl bg-pixar-blue/20 border border-pixar-blue/40 flex items-center justify-center text-pixar-cyan text-2xl flex-shrink-0">
+                        <i class="fa-solid fa-lightbulb"></i>
+                    </div>
+                    <div>
+                        <h3 class="heading-font text-xl text-white font-bold mb-1">Clear Concepts</h3>
+                        <p class="text-sm text-slate-300">Understand defining vs non-defining clauses with rules & comparative examples.</p>
+                    </div>
+                </div>
+
+                <div class="pixar-card p-6 flex items-start gap-4 cursor-pointer" onclick="switchSection('game')">
+                    <div class="w-14 h-14 rounded-2xl bg-pixar-purple/20 border border-pixar-purple/40 flex items-center justify-center text-pixar-pink text-2xl flex-shrink-0">
+                        <i class="fa-solid fa-puzzle-piece"></i>
+                    </div>
+                    <div>
+                        <h3 class="heading-font text-xl text-white font-bold mb-1">Interactive Game</h3>
+                        <p class="text-sm text-slate-300">Test your reflexes and sorting skills in our fun 3D Pixar style game challenge!</p>
+                    </div>
+                </div>
+
+                <div class="pixar-card p-6 flex items-start gap-4 cursor-pointer" onclick="switchSection('quiz')">
+                    <div class="w-14 h-14 rounded-2xl bg-pixar-yellow/20 border border-pixar-yellow/40 flex items-center justify-center text-pixar-yellow text-2xl flex-shrink-0">
+                        <i class="fa-solid fa-trophy"></i>
+                    </div>
+                    <div>
+                        <h3 class="heading-font text-xl text-white font-bold mb-1">10-Question Quiz</h3>
+                        <p class="text-sm text-slate-300">Evaluate your understanding with instant feedback and score reports.</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- ================= GUIDE SECTION ================= -->
+        <section id="sec-guide" class="hidden space-y-6 animate-fadeIn">
+            <div class="pixar-card p-8">
+                <div class="flex items-center gap-4 mb-6 border-b border-slate-700/60 pb-4">
+                    <div class="w-12 h-12 rounded-xl bg-pixar-yellow/20 text-pixar-yellow flex items-center justify-center text-2xl font-bold">
+                        <i class="fa-solid fa-compass"></i>
+                    </div>
+                    <div>
+                        <h2 class="heading-font text-3xl text-white font-bold">User Guide (Panduan)</h2>
+                        <p class="text-sm text-slate-400">How to navigate through this Interactive Learning Website</p>
+                    </div>
+                </div>
+
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6 text-slate-300">
+                    <div class="p-5 rounded-2xl bg-slate-800/60 border border-slate-700/50 space-y-3">
+                        <div class="flex items-center gap-3 text-pixar-cyan font-bold heading-font text-lg">
+                            <span class="w-8 h-8 rounded-full bg-pixar-cyan/20 flex items-center justify-center text-sm">1</span>
+                            Explore the Materials
+                        </div>
+                        <p class="text-sm leading-relaxed">
+                            Start by reading the <strong>Material & Simulation</strong> tab. Use the interactive comparison toggles to see how adding or removing commas changes the entire meaning of a sentence!
+                        </p>
+                    </div>
+
+                    <div class="p-5 rounded-2xl bg-slate-800/60 border border-slate-700/50 space-y-3">
+                        <div class="flex items-center gap-3 text-pixar-pink font-bold heading-font text-lg">
+                            <span class="w-8 h-8 rounded-full bg-pixar-pink/20 flex items-center justify-center text-sm">2</span>
+                            Play the Mini Game
+                        </div>
+                        <p class="text-sm leading-relaxed">
+                            Go to the <strong>Game</strong> tab to test your quick decision-making. Categorize clauses correctly as Defining or Non-Defining to earn high scores and confetti celebrations!
+                        </p>
+                    </div>
+
+                    <div class="p-5 rounded-2xl bg-slate-800/60 border border-slate-700/50 space-y-3">
+                        <div class="flex items-center gap-3 text-pixar-yellow font-bold heading-font text-lg">
+                            <span class="w-8 h-8 rounded-full bg-pixar-yellow/20 flex items-center justify-center text-sm">3</span>
+                            Take the 10-Question Quiz
+                        </div>
+                        <p class="text-sm leading-relaxed">
+                            Test your comprehensive knowledge with 10 multiple-choice questions. Read explanations for each answer to consolidate your learning.
+                        </p>
+                    </div>
+
+                    <div class="p-5 rounded-2xl bg-slate-800/60 border border-slate-700/50 space-y-3">
+                        <div class="flex items-center gap-3 text-pixar-purple font-bold heading-font text-lg">
+                            <span class="w-8 h-8 rounded-full bg-pixar-purple/20 flex items-center justify-center text-sm">4</span>
+                            Track Your Progress
+                        </div>
+                        <p class="text-sm leading-relaxed">
+                            Review your final score at the end of the quiz. Re-take the quiz anytime to aim for a perfect 100% score!
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- ================= OBJECTIVES SECTION ================= -->
+        <section id="sec-objectives" class="hidden space-y-6 animate-fadeIn">
+            <div class="pixar-card p-8">
+                <div class="flex items-center gap-4 mb-6 border-b border-slate-700/60 pb-4">
+                    <div class="w-12 h-12 rounded-xl bg-pixar-pink/20 text-pixar-pink flex items-center justify-center text-2xl font-bold">
+                        <i class="fa-solid fa-bullseye"></i>
+                    </div>
+                    <div>
+                        <h2 class="heading-font text-3xl text-white font-bold">Learning Objectives (Tujuan Pembelajaran)</h2>
+                        <p class="text-sm text-slate-400">Target Competencies for Class 12 English Students</p>
+                    </div>
+                </div>
+
+                <div class="bg-gradient-to-r from-pixar-blue/20 to-pixar-purple/20 border border-pixar-cyan/30 rounded-2xl p-6 mb-8 text-center md:text-left flex flex-col md:flex-row items-center justify-between gap-6">
+                    <div class="space-y-2">
+                        <span class="text-xs uppercase tracking-widest font-bold text-pixar-cyan">Main Target</span>
+                        <h3 class="heading-font text-2xl text-white font-bold">Mastering Relative Clauses in Context</h3>
+                        <p class="text-slate-300 text-sm">
+                            Siswa dapat memahami, membedakan, dan menggunakan materi pembelajaran <strong>"Defining and Non-Defining Relative Clauses"</strong> secara akurat baik dalam konteks tulisan maupun lisan.
+                        </p>
+                    </div>
+                    <div class="px-6 py-4 rounded-xl bg-slate-900/80 border border-white/10 text-center flex-shrink-0">
+                        <p class="text-3xl font-bold text-pixar-yellow heading-font">100%</p>
+                        <p class="text-xs text-slate-400">Target Mastery</p>
+                    </div>
+                </div>
+
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                    <div class="pixar-card p-6 border-t-4 border-t-pixar-cyan">
+                        <div class="text-pixar-cyan text-3xl mb-3"><i class="fa-solid fa-magnifying-glass"></i></div>
+                        <h4 class="heading-font text-xl text-white font-bold mb-2">1. Identify Differences</h4>
+                        <p class="text-slate-300 text-sm">
+                            Identify essential vs. extra non-essential information in complex English sentences.
+                        </p>
+                    </div>
+
+                    <div class="pixar-card p-6 border-t-4 border-t-pixar-yellow">
+                        <div class="text-pixar-yellow text-3xl mb-3"><i class="fa-solid fa-code-merge"></i></div>
+                        <h4 class="heading-font text-xl text-white font-bold mb-2">2. Correct Relative Pronouns</h4>
+                        <p class="text-slate-300 text-sm">
+                            Select correct relative pronouns (<em>who, which, that, whose, whom</em>) based on context and clause type.
+                        </p>
+                    </div>
+
+                    <div class="pixar-card p-6 border-t-4 border-t-pixar-pink">
+                        <div class="text-pixar-pink text-3xl mb-3"><i class="fa-solid fa-quote-right"></i></div>
+                        <h4 class="heading-font text-xl text-white font-bold mb-2">3. Punctuation & Meaning</h4>
+                        <p class="text-slate-300 text-sm">
+                            Apply correct punctuation (commas) and recognize how commas alter sentence meaning dramatically.
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- ================= MATERIAL SECTION ================= -->
+        <section id="sec-material" class="hidden space-y-8 animate-fadeIn">
+            <!-- Header -->
+            <div class="pixar-card p-8">
+                <div class="flex items-center gap-4 mb-2">
+                    <div class="w-12 h-12 rounded-xl bg-pixar-cyan/20 text-pixar-cyan flex items-center justify-center text-2xl font-bold">
+                        <i class="fa-solid fa-book-open"></i>
+                    </div>
+                    <div>
+                        <h2 class="heading-font text-3xl text-white font-bold">Grammar Material</h2>
+                        <p class="text-sm text-slate-400">Defining vs Non-Defining Relative Clauses</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Side by Side Comparison Cards (Taken directly from attached material) -->
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+                
+                <!-- DEFINING RELATIVE CLAUSE -->
+                <div class="pixar-card p-6 border-t-8 border-t-pixar-cyan flex flex-col justify-between">
+                    <div class="space-y-4">
+                        <div class="flex items-center justify-between">
+                            <span class="px-3 py-1 rounded-full bg-pixar-cyan/20 text-pixar-cyan font-bold text-xs uppercase tracking-wider">
+                                Essential Info
+                            </span>
+                            <span class="text-xs text-slate-400 font-semibold"><i class="fa-solid fa-ban text-red-400"></i> No Commas</span>
+                        </div>
+                        <h3 class="heading-font text-2xl text-white font-bold">Defining Relative Clauses</h3>
+                        <p class="text-slate-300 text-sm leading-relaxed">
+                            Give <strong>essential information</strong> about someone or something: information that we need in order to understand <em>what</em> or <em>who</em> is being referred to.
+                        </p>
+
+                        <!-- Pronouns Used -->
+                        <div class="p-3 rounded-xl bg-slate-900/60 border border-slate-700/50">
+                            <p class="text-xs font-semibold text-slate-400 mb-1">Relative Pronouns Used:</p>
+                            <div class="flex flex-wrap gap-1.5 text-xs font-mono">
+                                <span class="px-2 py-1 rounded bg-slate-800 text-pixar-cyan">who</span>
+                                <span class="px-2 py-1 rounded bg-slate-800 text-pixar-cyan">that</span>
+                                <span class="px-2 py-1 rounded bg-slate-800 text-pixar-cyan">which</span>
+                                <span class="px-2 py-1 rounded bg-slate-800 text-pixar-cyan">whose</span>
+                                <span class="px-2 py-1 rounded bg-slate-800 text-pixar-cyan">whom</span>
+                            </div>
+                        </div>
+
+                        <!-- Examples from Attachment -->
+                        <div class="space-y-2 pt-2">
+                            <p class="text-xs font-bold text-slate-400 uppercase tracking-wider">Examples from Textbook:</p>
+                            <div class="p-3 rounded-xl bg-slate-800/80 border-l-4 border-pixar-cyan text-sm text-slate-200">
+                                "They're the people <strong>whom I met last night</strong>."
+                            </div>
+                            <div class="p-3 rounded-xl bg-slate-800/80 border-l-4 border-pixar-cyan text-sm text-slate-200">
+                                "Those are the houses <strong>that were flooded during the storm</strong>."
+                            </div>
+                            <div class="p-3 rounded-xl bg-slate-800/80 border-l-4 border-pixar-cyan text-sm text-slate-200">
+                                "The money was given to the boy <strong>whose bike was stolen</strong>."
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- NON-DEFINING RELATIVE CLAUSE -->
+                <div class="pixar-card p-6 border-t-8 border-t-pixar-yellow flex flex-col justify-between">
+                    <div class="space-y-4">
+                        <div class="flex items-center justify-between">
+                            <span class="px-3 py-1 rounded-full bg-pixar-yellow/20 text-pixar-yellow font-bold text-xs uppercase tracking-wider">
+                                Extra Info
+                            </span>
+                            <span class="text-xs text-pixar-yellow font-semibold"><i class="fa-solid fa-circle-check"></i> Uses Commas ( , )</span>
+                        </div>
+                        <h3 class="heading-font text-2xl text-white font-bold">Non-Defining Relative Clauses</h3>
+                        <p class="text-slate-300 text-sm leading-relaxed">
+                            Give <strong>extra information</strong> about a person or thing. It is <em>not necessary</em> information. <strong>Commas are used</strong> to set apart the non-defining clause.
+                        </p>
+
+                        <!-- Pronouns Used -->
+                        <div class="p-3 rounded-xl bg-slate-900/60 border border-slate-700/50">
+                            <p class="text-xs font-semibold text-slate-400 mb-1">Relative Pronouns Used (Note: "that" is NEVER used):</p>
+                            <div class="flex flex-wrap gap-1.5 text-xs font-mono">
+                                <span class="px-2 py-1 rounded bg-slate-800 text-pixar-yellow">who</span>
+                                <span class="px-2 py-1 rounded bg-slate-800 text-pixar-yellow">which</span>
+                                <span class="px-2 py-1 rounded bg-slate-800 text-pixar-yellow">whose</span>
+                                <span class="px-2 py-1 rounded bg-slate-800 text-pixar-yellow">whom</span>
+                            </div>
+                        </div>
+
+                        <!-- Examples from Attachment -->
+                        <div class="space-y-2 pt-2">
+                            <p class="text-xs font-bold text-slate-400 uppercase tracking-wider">Examples from Textbook:</p>
+                            <div class="p-3 rounded-xl bg-slate-800/80 border-l-4 border-pixar-yellow text-sm text-slate-200">
+                                "My best friend<strong>, who lives next door,</strong> is called Jimmy."
+                            </div>
+                            <div class="p-3 rounded-xl bg-slate-800/80 border-l-4 border-pixar-yellow text-sm text-slate-200">
+                                "The red car over there<strong>, which belongs to Dirk,</strong> is 10 years old."
+                            </div>
+                            <div class="p-3 rounded-xl bg-slate-800/80 border-l-4 border-pixar-yellow text-sm text-slate-200">
+                                "That woman<strong>, whom I met last year,</strong> is talking to her friend."
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+
+            <!-- INTERACTIVE SIMULATION & MEANING COMPARISON (Deep Dive from Textbook) -->
+            <div class="pixar-card p-8 space-y-6">
+                <div class="flex items-center gap-3">
+                    <i class="fa-solid fa-flask-vial text-2xl text-pixar-pink"></i>
+                    <h3 class="heading-font text-2xl text-white font-bold">Interactive Meaning Simulator</h3>
+                </div>
+                <p class="text-slate-300 text-sm">
+                    Defining and non-defining relative clauses can sometimes look almost identical, but <strong>have completely different meanings!</strong> Click the buttons below to switch perspectives:
+                </p>
+
+                <!-- Simulator Interactive Box -->
+                <div class="bg-slate-900/90 rounded-2xl p-6 border border-slate-700/80 space-y-6">
+                    <!-- Switch Controls -->
+                    <div class="flex flex-wrap gap-3 justify-center">
+                        <button id="sim-btn-def" onclick="setSimulation('defining')" class="px-5 py-2.5 rounded-xl font-bold text-sm transition-all bg-pixar-cyan text-slate-950 shadow-lg scale-105">
+                            Defining Version (No Commas)
+                        </button>
+                        <button id="sim-btn-nondef" onclick="setSimulation('nondefining')" class="px-5 py-2.5 rounded-xl font-bold text-sm transition-all bg-slate-800 text-slate-300 hover:bg-slate-700">
+                            Non-Defining Version (With Commas)
+                        </button>
+                    </div>
+
+                    <!-- Interactive Result Display -->
+                    <div class="p-6 rounded-xl bg-slate-800/80 border border-slate-700 text-center space-y-4">
+                        <div id="sim-sentence" class="heading-font text-2xl md:text-3xl text-pixar-yellow">
+                            "My sister who works at the music shop has two cats."
+                        </div>
+                        <div id="sim-explanation" class="text-slate-300 text-base max-w-2xl mx-auto p-4 rounded-xl bg-slate-900/80 border border-pixar-cyan/30">
+                            <i class="fa-solid fa-circle-info text-pixar-cyan mr-2"></i>
+                            <strong>Meaning:</strong> The speaker has <strong>more than one sister</strong>. The one he's talking about works at the music shop.
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- ================= GAME SECTION ================= -->
+        <section id="sec-game" class="hidden space-y-6 animate-fadeIn">
+            <div class="pixar-card p-8">
+                <!-- Game Header -->
+                <div class="flex flex-col md:flex-row items-center justify-between gap-4 mb-6 border-b border-slate-700/60 pb-4">
+                    <div class="flex items-center gap-4">
+                        <div class="w-12 h-12 rounded-xl bg-green-500/20 text-green-400 flex items-center justify-center text-2xl font-bold">
+                            <i class="fa-solid fa-gamepad"></i>
+                        </div>
+                        <div>
+                            <h2 class="heading-font text-3xl text-white font-bold">Clause Master Game</h2>
+                            <p class="text-sm text-slate-400">Classify sentences accurately to rack up points!</p>
+                        </div>
+                    </div>
+
+                    <!-- Scoreboard -->
+                    <div class="flex items-center gap-4 bg-slate-900 px-5 py-2.5 rounded-2xl border border-slate-700">
+                        <div class="text-center">
+                            <p class="text-xs text-slate-400 uppercase font-bold">Score</p>
+                            <p id="game-score" class="heading-font text-2xl text-pixar-yellow font-bold">0</p>
+                        </div>
+                        <div class="w-px h-8 bg-slate-700"></div>
+                        <div class="text-center">
+                            <p class="text-xs text-slate-400 uppercase font-bold">Streak</p>
+                            <p id="game-streak" class="heading-font text-2xl text-pixar-pink font-bold">0🔥</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Game Container -->
+                <div id="game-container" class="space-y-8 min-h-[350px] flex flex-col justify-center">
+                    <!-- Current Challenge Card -->
+                    <div class="text-center space-y-4 max-w-2xl mx-auto">
+                        <span id="game-question-num" class="px-4 py-1.5 rounded-full bg-pixar-purple/30 text-pixar-purple text-xs font-bold border border-pixar-purple/40">
+                            Question 1 of 6
+                        </span>
+                        
+                        <div class="p-8 rounded-3xl bg-slate-900/90 border-2 border-white/10 shadow-2xl space-y-4">
+                            <p class="text-slate-400 text-xs uppercase tracking-widest font-bold">Is this clause Defining or Non-Defining?</p>
+                            <p id="game-sentence" class="heading-font text-2xl md:text-3xl text-white font-bold leading-relaxed">
+                                "Loading Game..."
+                            </p>
+                        </div>
+
+                        <!-- Game Action Buttons -->
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-4 pt-4">
+                            <button onclick="answerGame('DEFINING')" class="pixar-btn px-6 py-5 rounded-2xl bg-gradient-to-r from-pixar-blue to-cyan-500 text-white text-lg font-bold flex items-center justify-center gap-3">
+                                <i class="fa-solid fa-tag"></i> Defining (Essential Info / No Comma)
+                            </button>
+                            <button onclick="answerGame('NON-DEFINING')" class="pixar-btn pixar-btn-yellow px-6 py-5 rounded-2xl text-lg font-bold flex items-center justify-center gap-3">
+                                <i class="fa-solid fa-quote-left"></i> Non-Defining (Extra Info / Commas)
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Feedback Box -->
+                    <div id="game-feedback" class="hidden max-w-2xl mx-auto p-4 rounded-2xl text-center text-sm font-semibold"></div>
+                </div>
+            </div>
+        </section>
+
+        <!-- ================= QUIZ SECTION ================= -->
+        <section id="sec-quiz" class="hidden space-y-6 animate-fadeIn">
+            <div class="pixar-card p-8">
+                <!-- Quiz Header -->
+                <div class="flex flex-col md:flex-row items-center justify-between gap-4 mb-6 border-b border-slate-700/60 pb-4">
+                    <div class="flex items-center gap-4">
+                        <div class="w-12 h-12 rounded-xl bg-pixar-purple/20 text-pixar-purple flex items-center justify-center text-2xl font-bold">
+                            <i class="fa-solid fa-pen-to-square"></i>
+                        </div>
+                        <div>
+                            <h2 class="heading-font text-3xl text-white font-bold">10 Multiple Choice Questions</h2>
+                            <p class="text-sm text-slate-400">Class 12 Assessment • Relative Clauses</p>
+                        </div>
+                    </div>
+
+                    <div id="quiz-progress-badge" class="px-4 py-2 rounded-xl bg-slate-900 border border-slate-700 text-pixar-cyan font-bold text-sm">
+                        Question <span id="quiz-curr-num">1</span> / 10
+                    </div>
+                </div>
+
+                <!-- Quiz Card Screen -->
+                <div id="quiz-screen" class="max-w-3xl mx-auto space-y-6">
+                    <!-- Question Prompt Box -->
+                    <div class="p-6 rounded-2xl bg-slate-900/80 border border-slate-700 space-y-2">
+                        <p id="quiz-question-text" class="heading-font text-xl md:text-2xl text-white font-semibold">
+                            Question text goes here...
+                        </p>
+                    </div>
+
+                    <!-- Options Grid -->
+                    <div id="quiz-options-container" class="grid grid-cols-1 gap-3">
+                        <!-- Dynamic Options generated by JS -->
+                    </div>
+
+                    <!-- Quiz Navigation Buttons -->
+                    <div class="flex justify-between items-center pt-4">
+                        <button id="quiz-prev-btn" onclick="prevQuiz()" class="px-5 py-2.5 rounded-xl bg-slate-800 text-slate-300 font-bold hover:bg-slate-700 text-sm disabled:opacity-40">
+                            <i class="fa-solid fa-arrow-left mr-2"></i> Previous
+                        </button>
+                        <button id="quiz-next-btn" onclick="nextQuiz()" class="pixar-btn pixar-btn-purple px-6 py-2.5 rounded-xl font-bold text-sm">
+                            Next Question <i class="fa-solid fa-arrow-right ml-2"></i>
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Quiz Result Screen (Hidden by default) -->
+                <div id="quiz-result-screen" class="hidden text-center space-y-6 py-8 max-w-xl mx-auto">
+                    <div class="w-24 h-24 mx-auto rounded-full bg-gradient-to-tr from-pixar-yellow to-pixar-pink p-1 flex items-center justify-center shadow-2xl">
+                        <div class="w-full h-full bg-slate-900 rounded-full flex items-center justify-center text-4xl text-pixar-yellow">
+                            <i class="fa-solid fa-trophy"></i>
+                        </div>
+                    </div>
+                    <div>
+                        <h3 class="heading-font text-4xl font-bold text-white mb-2">Quiz Completed!</h3>
+                        <p class="text-slate-400">Great job completing the Relative Clauses assessment.</p>
+                    </div>
+
+                    <div class="p-6 rounded-3xl bg-slate-900/90 border border-slate-700 space-y-2">
+                        <p class="text-slate-400 text-xs uppercase font-bold tracking-widest">Your Score</p>
+                        <p id="quiz-final-score" class="heading-font text-6xl text-pixar-cyan font-bold">80%</p>
+                        <p id="quiz-feedback-text" class="text-sm font-semibold text-slate-300 pt-2">Awesome effort!</p>
+                    </div>
+
+                    <button onclick="resetQuiz()" class="pixar-btn pixar-btn-yellow px-8 py-3.5 rounded-2xl font-bold text-base">
+                        <i class="fa-solid fa-rotate-right mr-2"></i> Retake Quiz
+                    </button>
+                </div>
+            </div>
+        </section>
+
+        <!-- ================= DEVELOPER SECTION ================= -->
+        <section id="sec-developer" class="hidden space-y-6 animate-fadeIn">
+            <div class="pixar-card p-8 max-w-3xl mx-auto">
+                <div class="flex items-center gap-4 mb-6 border-b border-slate-700/60 pb-4">
+                    <div class="w-12 h-12 rounded-xl bg-pixar-blue/20 text-pixar-cyan flex items-center justify-center text-2xl font-bold">
+                        <i class="fa-solid fa-user-astronaut"></i>
+                    </div>
+                    <div>
+                        <h2 class="heading-font text-3xl text-white font-bold">Developer Profile</h2>
+                        <p class="text-sm text-slate-400">Pengembang Media Pembelajaran Interaktif</p>
+                    </div>
+                </div>
+
+                <div class="flex flex-col md:flex-row items-center gap-8 bg-slate-900/80 p-6 rounded-3xl border border-slate-700/80">
+                    <!-- Pixar 3D Teacher Avatar SVG -->
+                    <div class="w-40 h-40 rounded-2xl bg-gradient-to-tr from-pixar-purple to-pixar-pink p-1 flex-shrink-0 shadow-2xl">
+                        <div class="w-full h-full bg-slate-900 rounded-[14px] flex items-center justify-center overflow-hidden">
+                            <svg class="w-32 h-32" viewBox="0 0 200 200" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                <circle cx="100" cy="95" r="45" fill="#FFE0BD"/>
+                                <!-- Hair -->
+                                <path d="M 50 80 C 50 30, 150 30, 150 80 C 150 60, 50 60, 50 80 Z" fill="#4A2810"/>
+                                <path d="M 55 60 Q 100 20 145 60 Q 100 40 55 60 Z" fill="#321A0A"/>
+                                <!-- Eyes -->
+                                <circle cx="82" cy="92" r="5" fill="#1E293B"/>
+                                <circle cx="118" cy="92" r="5" fill="#1E293B"/>
+                                <circle cx="83" cy="90" r="1.5" fill="white"/>
+                                <circle cx="119" cy="90" r="1.5" fill="white"/>
+                                <!-- Glasses -->
+                                <rect x="68" y="82" width="28" height="20" rx="5" stroke="#7C3AED" stroke-width="3" fill="none"/>
+                                <rect x="104" y="82" width="28" height="20" rx="5" stroke="#7C3AED" stroke-width="3" fill="none"/>
+                                <line x1="96" y1="90" x2="104" y2="90" stroke="#7C3AED" stroke-width="3"/>
+                                <!-- Smile -->
+                                <path d="M 85 118 Q 100 128 115 118" stroke="#E11D48" stroke-width="4" stroke-linecap="round" fill="none"/>
+                                <!-- Teacher Clothes -->
+                                <path d="M 40 180 C 40 140, 160 140, 160 180 Z" fill="#0066FF"/>
+                                <path d="M 85 140 L 100 165 L 115 140 Z" fill="#FFB800"/>
+                            </svg>
+                        </div>
+                    </div>
+
+                    <!-- Bio -->
+                    <div class="space-y-3 text-center md:text-left">
+                        <span class="px-3 py-1 rounded-full bg-pixar-cyan/20 text-pixar-cyan font-bold text-xs">
+                            English Language Educator
+                        </span>
+                        <h3 class="heading-font text-3xl text-white font-bold">Mrs. Siti Sapriyah</h3>
+                        <p class="text-slate-300 text-sm leading-relaxed">
+                            Guru Bahasa Inggris SMA Kelas 12 (Fase E/F). Berdedikasi dalam merancang media pembelajaran interaktif berbasis web untuk menciptakan suasana belajar grammar yang menyenangkan, efektif, dan intuitif bagi generasi muda.
+                        </p>
+                        <div class="pt-2 flex flex-wrap gap-2 justify-center md:justify-start text-xs font-semibold">
+                            <span class="px-3 py-1.5 rounded-xl bg-slate-800 border border-slate-700 text-slate-300">
+                                <i class="fa-solid fa-graduation-cap text-pixar-yellow mr-1"></i> Class 12 Senior High School
+                            </span>
+                            <span class="px-3 py-1.5 rounded-xl bg-slate-800 border border-slate-700 text-slate-300">
+                                <i class="fa-solid fa-laptop-code text-pixar-cyan mr-1"></i> Web Learning Expert
+                            </span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+    </main>
+
+    <!-- FOOTER -->
+    <footer class="border-t border-slate-800 bg-slate-950/80 py-6 text-center text-xs text-slate-500">
+        <div class="max-w-7xl mx-auto px-4 flex flex-col md:flex-row items-center justify-between gap-4">
+            <p>© 2026 Interactive Learning Media • Designed for SMA Grade 12</p>
+            <p class="text-slate-400">Developed by <strong class="text-pixar-cyan">Mrs. Siti Sapriyah</strong></p>
+        </div>
+    </footer>
+
+    <!-- JAVASCRIPT LOGIC -->
+    <script>
+        // SOUND EFFECTS USING TONE.JS & WEB SPEECH SYNTHESIS (VOICE LINES)
+        const correctVoiceMessages = [
+            "Wow, amazing!",
+            "Great job!",
+            "Your answer is correct!",
+            "Brilliant!",
+            "Fantastic!",
+            "Superb!"
+        ];
+
+        const wrongVoiceMessages = [
+            "Sorry, it's incorrect. Try again!",
+            "Oops, wrong answer!",
+            "Not quite, try again!",
+            "Almost there!",
+            "Don't give up!"
+        ];
+
+        function speakText(text) {
+            try {
+                if ('speechSynthesis' in window) {
+                    // Cancel any active speech
+                    window.speechSynthesis.cancel();
+
+                    const utterance = new SpeechSynthesisUtterance(text);
+                    utterance.lang = 'en-US'; // English accent suitable for Class 12 SMA
+                    utterance.rate = 1.0;     // Natural speed
+                    utterance.pitch = 1.1;    // Cheerful pitch
+
+                    // Try to pick an English voice if available
+                    const voices = window.speechSynthesis.getVoices();
+                    const englishVoice = voices.find(v => v.lang.includes('en'));
+                    if (englishVoice) {
+                        utterance.voice = englishVoice;
+                    }
+
+                    window.speechSynthesis.speak(utterance);
+                }
+            } catch (e) {
+                console.log("Speech synthesis error:", e);
+            }
+        }
+
+        function playCorrectSound() {
+            try {
+                if (Tone.context.state !== 'running') {
+                    Tone.start();
+                }
+                // Joyful Pixar-style chime (C5 - E5 - G5 - C6)
+                const synth = new Tone.PolySynth(Tone.Synth).toDestination();
+                synth.volume.value = -6;
+                const now = Tone.now();
+                synth.triggerAttackRelease("C5", "8n", now);
+                synth.triggerAttackRelease("E5", "8n", now + 0.1);
+                synth.triggerAttackRelease("G5", "8n", now + 0.2);
+                synth.triggerAttackRelease("C6", "4n", now + 0.3);
+
+                // Play random vocal praise
+                const randomMsg = correctVoiceMessages[Math.floor(Math.random() * correctVoiceMessages.length)];
+                speakText(randomMsg);
+            } catch (e) {
+                console.log("Audio play error:", e);
+            }
+        }
+
+        function playWrongSound() {
+            try {
+                if (Tone.context.state !== 'running') {
+                    Tone.start();
+                }
+                // Low pitch buzzer effect
+                const synth = new Tone.Synth({
+                    oscillator: { type: "sawtooth" },
+                    envelope: { attack: 0.01, decay: 0.2, sustain: 0.1, release: 0.2 }
+                }).toDestination();
+                synth.volume.value = -4;
+                const now = Tone.now();
+                synth.triggerAttackRelease("G2", "8n", now);
+                synth.triggerAttackRelease("E2", "4n", now + 0.15);
+
+                // Play random incorrect encouragement message
+                const randomMsg = wrongVoiceMessages[Math.floor(Math.random() * wrongVoiceMessages.length)];
+                speakText(randomMsg);
+            } catch (e) {
+                console.log("Audio play error:", e);
+            }
+        }
+
+        // SECTION SWITCHING SYSTEM
+        function switchSection(sectionId) {
+            const sections = ['home', 'guide', 'objectives', 'material', 'game', 'quiz', 'developer'];
+            sections.forEach(sec => {
+                const el = document.getElementById(`sec-${sec}`);
+                if (el) el.classList.add('hidden');
+            });
+
+            const target = document.getElementById(`sec-${sectionId}`);
+            if (target) {
+                target.classList.remove('hidden');
+                window.scrollTo({ top: 0, behavior: 'smooth' });
+            }
+        }
+
+        // MATERIAL INTERACTIVE SIMULATOR LOGIC
+        function setSimulation(type) {
+            const sentenceEl = document.getElementById('sim-sentence');
+            const explanationEl = document.getElementById('sim-explanation');
+            const btnDef = document.getElementById('sim-btn-def');
+            const btnNonDef = document.getElementById('sim-btn-nondef');
+
+            if (type === 'defining') {
+                sentenceEl.innerHTML = `"My sister <span class="text-pixar-cyan underline decoration-wavy">who works at the music shop</span> has two cats."`;
+                explanationEl.innerHTML = `
+                    <i class="fa-solid fa-circle-info text-pixar-cyan mr-2"></i>
+                    <strong>Defining Meaning:</strong> The speaker has <strong>more than one sister</strong>. The relative clause specifies WHICH sister has two cats (the one working at the music shop).
+                `;
+                btnDef.className = "px-5 py-2.5 rounded-xl font-bold text-sm transition-all bg-pixar-cyan text-slate-950 shadow-lg scale-105";
+                btnNonDef.className = "px-5 py-2.5 rounded-xl font-bold text-sm transition-all bg-slate-800 text-slate-300 hover:bg-slate-700";
+            } else {
+                sentenceEl.innerHTML = `"My sister<span class="text-pixar-yellow font-bold">,</span> <span class="text-pixar-yellow underline decoration-wavy">who works at the music shop</span><span class="text-pixar-yellow font-bold">,</span> has two cats."`;
+                explanationEl.innerHTML = `
+                    <i class="fa-solid fa-circle-info text-pixar-yellow mr-2"></i>
+                    <strong>Non-Defining Meaning:</strong> The speaker has <strong>ONLY ONE sister</strong>. The fact that she works at the music shop is just EXTRA background detail!
+                `;
+                btnNonDef.className = "px-5 py-2.5 rounded-xl font-bold text-sm transition-all bg-pixar-yellow text-slate-950 shadow-lg scale-105";
+                btnDef.className = "px-5 py-2.5 rounded-xl font-bold text-sm transition-all bg-slate-800 text-slate-300 hover:bg-slate-700";
+            }
+        }
+
+        // ================= GAME LOGIC =================
+        const gameQuestions = [
+            {
+                sentence: "My best friend, who lives next door, is called Jimmy.",
+                type: "NON-DEFINING",
+                reason: "It gives extra information with commas!"
+            },
+            {
+                sentence: "Those are the houses that were flooded during the storm.",
+                type: "DEFINING",
+                reason: "Essential info identifying which houses without commas."
+            },
+            {
+                sentence: "The red car over there, which belongs to Dirk, is 10 years old.",
+                type: "NON-DEFINING",
+                reason: "Contains commas around extra information."
+            },
+            {
+                sentence: "They're the people whom I met last night.",
+                type: "DEFINING",
+                reason: "Identifies specifically which people, no commas."
+            },
+            {
+                sentence: "The money was given to the boy whose bike was stolen.",
+                type: "DEFINING",
+                reason: "Identifies which boy received the money."
+            },
+            {
+                sentence: "That woman, whom I met last year, is talking to her friend.",
+                type: "NON-DEFINING",
+                reason: "Extra information surrounded by commas."
+            }
+        ];
+
+        let gameIndex = 0;
+        let gameScore = 0;
+        let gameStreak = 0;
+
+        function loadGameQuestion() {
+            if (gameIndex >= gameQuestions.length) {
+                gameIndex = 0; // Loop or reset
+            }
+            const q = gameQuestions[gameIndex];
+            document.getElementById('game-sentence').textContent = `"${q.sentence}"`;
+            document.getElementById('game-question-num').textContent = `Question ${gameIndex + 1} of ${gameQuestions.length}`;
+            
+            const feedback = document.getElementById('game-feedback');
+            feedback.classList.add('hidden');
+        }
+
+        function answerGame(userChoice) {
+            const q = gameQuestions[gameIndex];
+            const feedback = document.getElementById('game-feedback');
+            feedback.classList.remove('hidden');
+
+            if (userChoice === q.type) {
+                playCorrectSound();
+                gameScore += 100 + (gameStreak * 20);
+                gameStreak++;
+                feedback.className = "max-w-2xl mx-auto p-4 rounded-2xl text-center text-sm font-semibold bg-green-500/20 border border-green-500 text-green-300 animate-bounce";
+                feedback.innerHTML = `<i class="fa-solid fa-circle-check mr-2"></i> Correct! ${q.reason}`;
+                
+                // Trigger Confetti on streak
+                if (window.confetti && gameStreak >= 2) {
+                    confetti({ particleCount: 40, spread: 60, origin: { y: 0.7 } });
+                }
+            } else {
+                playWrongSound();
+                gameStreak = 0;
+                feedback.className = "max-w-2xl mx-auto p-4 rounded-2xl text-center text-sm font-semibold bg-red-500/20 border border-red-500 text-red-300";
+                feedback.innerHTML = `<i class="fa-solid fa-circle-xmark mr-2"></i> Oops! This is ${q.type}. ${q.reason}`;
+            }
+
+            document.getElementById('game-score').textContent = gameScore;
+            document.getElementById('game-streak').textContent = `${gameStreak}🔥`;
+
+            setTimeout(() => {
+                gameIndex = (gameIndex + 1) % gameQuestions.length;
+                loadGameQuestion();
+            }, 2200);
+        }
+
+        // ================= QUIZ LOGIC (10 Questions PG) =================
+        const quizData = [
+            {
+                q: "1. Defining relative clauses give ________ information about someone or something.",
+                options: ["essential", "extra non-necessary", "unimportant", "random"],
+                answer: 0,
+                explain: "Defining relative clauses provide essential information needed to identify the person or thing."
+            },
+            {
+                q: "2. Which punctuation mark is ALWAYS used to set apart a non-defining relative clause?",
+                options: ["Semicolon (;)", "Commas ( , )", "Exclamation mark (!)", "Hyphen (-)"],
+                answer: 1,
+                explain: "Non-defining relative clauses are set off by commas."
+            },
+            {
+                q: "3. 'My best friend, ____ lives next door, is called Jimmy.' Choose the correct pronoun:",
+                options: ["which", "who", "whom", "that"],
+                answer: 1,
+                explain: "'Who' is used for people as a subject pronoun in a relative clause."
+            },
+            {
+                q: "4. 'Those are the houses ____ were flooded during the storm.' Choose the correct pronoun:",
+                options: ["whom", "whose", "that", "who"],
+                answer: 2,
+                explain: "'That' (or which) is used for things in defining relative clauses."
+            },
+            {
+                q: "5. 'The money was given to the boy ____ bike was stolen.' Choose the correct pronoun:",
+                options: ["whose", "whom", "which", "who"],
+                answer: 0,
+                explain: "'Whose' is used to show possession (the boy's bike)."
+            },
+            {
+                q: "6. Can we use the relative pronoun 'that' in a non-defining relative clause?",
+                options: ["Yes, always", "No, never", "Only for people", "Only for places"],
+                answer: 1,
+                explain: "'That' cannot be used in non-defining relative clauses (clauses with commas)."
+            },
+            {
+                q: "7. 'The red car over there, ____ belongs to Dirk, is 10 years old.' Choose the correct pronoun:",
+                options: ["who", "whom", "which", "whose"],
+                answer: 2,
+                explain: "'Which' is used for non-human things in non-defining clauses."
+            },
+            {
+                q: "8. 'They're the people ____ I met last night.' Choose the correct pronoun:",
+                options: ["whom", "which", "whose", "where"],
+                answer: 0,
+                explain: "'Whom' is used when referring to the object of a verb or preposition."
+            },
+            {
+                q: "9. Compare: 'My sister who works at the music shop has two cats.' What does this mean?",
+                options: [
+                    "The speaker has only one sister.",
+                    "The speaker has more than one sister.",
+                    "The sister sold two cats.",
+                    "The shop belongs to the sister."
+                ],
+                answer: 1,
+                explain: "Without commas (defining), it implies the speaker has multiple sisters and is specifying which one."
+            },
+            {
+                q: "10. Compare: 'My sister, who works at the music shop, has two cats.' What does this mean?",
+                options: [
+                    "The speaker has only one sister.",
+                    "The speaker has five sisters.",
+                    "The sister works at a cat shop.",
+                    "It is unclear how many sisters there are."
+                ],
+                answer: 0,
+                explain: "With commas (non-defining), the clause is extra info; the speaker has only one sister."
+            }
+        ];
+
+        let currentQuizIndex = 0;
+        let userQuizAnswers = new Array(quizData.length).fill(null);
+
+        function renderQuiz() {
+            const q = quizData[currentQuizIndex];
+            document.getElementById('quiz-curr-num').textContent = currentQuizIndex + 1;
+            document.getElementById('quiz-question-text').textContent = q.q;
+
+            const container = document.getElementById('quiz-options-container');
+            container.innerHTML = '';
+
+            q.options.forEach((opt, idx) => {
+                const selected = userQuizAnswers[currentQuizIndex] === idx;
+                const btn = document.createElement('button');
+                btn.className = `w-full p-4 rounded-xl text-left text-sm md:text-base font-semibold border transition-all flex items-center justify-between ${
+                    selected 
+                    ? 'bg-pixar-blue/30 border-pixar-cyan text-white shadow-lg' 
+                    : 'bg-slate-900/60 border-slate-700/80 text-slate-300 hover:bg-slate-800'
+                }`;
+                
+                btn.innerHTML = `
+                    <span><strong class="text-pixar-cyan mr-2">${String.fromCharCode(65 + idx)}.</strong> ${opt}</span>
+                    ${selected ? '<i class="fa-solid fa-circle-check text-pixar-cyan text-lg"></i>' : '<i class="fa-regular fa-circle text-slate-600"></i>'}
+                `;
+
+                btn.onclick = () => selectQuizOption(idx);
+                container.appendChild(btn);
+            });
+
+            // Update button states
+            document.getElementById('quiz-prev-btn').disabled = (currentQuizIndex === 0);
+            const nextBtn = document.getElementById('quiz-next-btn');
+            if (currentQuizIndex === quizData.length - 1) {
+                nextBtn.innerHTML = `Submit Quiz <i class="fa-solid fa-paper-plane ml-2"></i>`;
+                nextBtn.className = "pixar-btn pixar-btn-yellow px-6 py-2.5 rounded-xl font-bold text-sm";
+            } else {
+                nextBtn.innerHTML = `Next Question <i class="fa-solid fa-arrow-right ml-2"></i>`;
+                nextBtn.className = "pixar-btn pixar-btn-purple px-6 py-2.5 rounded-xl font-bold text-sm";
+            }
+        }
+
+        function selectQuizOption(optionIdx) {
+            const correctIdx = quizData[currentQuizIndex].answer;
+            if (optionIdx === correctIdx) {
+                playCorrectSound();
+            } else {
+                playWrongSound();
+            }
+
+            userQuizAnswers[currentQuizIndex] = optionIdx;
+            renderQuiz();
+        }
+
+        function prevQuiz() {
+            if (currentQuizIndex > 0) {
+                currentQuizIndex--;
+                renderQuiz();
+            }
+        }
+
+        function nextQuiz() {
+            if (currentQuizIndex < quizData.length - 1) {
+                currentQuizIndex++;
+                renderQuiz();
+            } else {
+                finishQuiz();
+            }
+        }
+
+        function finishQuiz() {
+            // Calculate Score
+            let correctCount = 0;
+            userQuizAnswers.forEach((ans, i) => {
+                if (ans === quizData[i].answer) correctCount++;
+            });
+
+            const scorePercent = Math.round((correctCount / quizData.length) * 100);
+
+            document.getElementById('quiz-screen').classList.add('hidden');
+            document.getElementById('quiz-result-screen').classList.remove('hidden');
+
+            document.getElementById('quiz-final-score').textContent = `${scorePercent}%`;
+            
+            let feedback = "";
+            if (scorePercent >= 80) {
+                feedback = "🌟 Outstanding! You have mastered Defining and Non-Defining Relative Clauses!";
+                if (window.confetti) confetti({ particleCount: 100, spread: 80, origin: { y: 0.6 } });
+            } else if (scorePercent >= 60) {
+                feedback = "👍 Good job! Review the material tab to polish your non-defining clause commas.";
+            } else {
+                feedback = "💪 Keep practicing! Go through the Material and Simulator tab again.";
+            }
+            document.getElementById('quiz-feedback-text').textContent = feedback;
+        }
+
+        function resetQuiz() {
+            currentQuizIndex = 0;
+            userQuizAnswers = new Array(quizData.length).fill(null);
+            document.getElementById('quiz-screen').classList.remove('hidden');
+            document.getElementById('quiz-result-screen').classList.add('hidden');
+            renderQuiz();
+        }
+
+        // INIT ON LOAD
+        window.onload = function() {
+            loadGameQuestion();
+            renderQuiz();
+
+            // Pre-load voices for SpeechSynthesis
+            if ('speechSynthesis' in window) {
+                window.speechSynthesis.onvoiceschanged = function() {
+                    window.speechSynthesis.getVoices();
+                };
+            }
+        };
+    </script>
+</body>
+</html>
